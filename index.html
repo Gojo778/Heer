@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy New Year, AYA</title>
+
+<style>
+  :root{
+    --pink:#ff4d88;
+    --purple:#7c4dff;
+    --bg:#fff0f6;
+    --card:#ffffffdd;
+    --ink:#2b1b23;
+    --muted:#6a3a52;
+  }
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    background:
+      radial-gradient(circle at top left,#ffe3ee,transparent 60%),
+      radial-gradient(circle at bottom right,#e7ddff,transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    overflow-x:hidden;
+  }
+
+  /* Floating hearts + flowers layer */
+  .float-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1;
+  }
+  .floaty{
+    position:absolute;
+    bottom:-40px;
+    font-size:18px;
+    opacity:.35;
+    animation: rise linear forwards;
+    filter: blur(.1px);
+    will-change: transform, opacity;
+  }
+  @keyframes rise{
+    0%{transform: translateY(0) translateX(0) rotate(0deg); opacity:0}
+    10%{opacity:.35}
+    100%{transform: translateY(-120vh) translateX(var(--drift)) rotate(var(--rot)); opacity:0}
+  }
+
+  .wrap{
+    width:100%;
+    max-width:900px;
+    padding:30px 18px 90px;
+    position:relative;
+    z-index:2;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:28px;
+    box-shadow:0 20px 45px rgba(0,0,0,.12);
+    text-align:center;
+    animation:fade .6s ease;
+    backdrop-filter: blur(12px);
+  }
+  @keyframes fade{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:none}
+  }
+  .hidden{display:none}
+
+  h1{font-size:clamp(26px,4vw,38px); margin:0 0 10px}
+  h2{color:var(--muted); font-weight:650; margin:0 0 10px}
+  p{line-height:1.75; margin:10px 0}
+
+  .soft{
+    color: rgba(43,27,35,.72);
+    font-size:14px;
+  }
+
+  input{
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid #ddd;
+    font-size:16px;
+    width:240px;
+    text-align:center;
+    outline:none;
+  }
+  input:focus{
+    border-color: rgba(255,77,136,.55);
+    box-shadow: 0 0 0 4px rgba(255,77,136,.14);
+  }
+
+  button{
+    margin-top:18px;
+    padding:12px 20px;
+    border-radius:14px;
+    border:none;
+    font-weight:800;
+    color:white;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    cursor:pointer;
+    transition: transform .08s ease, filter .12s ease;
+  }
+  button:hover{filter:brightness(1.03)}
+  button:active{transform:scale(.985)}
+
+  .month{
+    font-size:52px;
+    font-weight:950;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin:12px 0;
+  }
+
+  /* Envelope (click-to-open) */
+  .envelope-zone{
+    margin-top:22px;
+    display:flex;
+    justify-content:center;
+  }
+  .envelope{
+    width:320px;
+    max-width:92vw;
+    cursor:pointer;
+    user-select:none;
+    position:relative;
+    transform: translateY(0);
+    animation: gentleFloat 3s ease-in-out infinite;
+    outline:none;
+  }
+  @keyframes gentleFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-8px)}
+  }
+
+  .env-body{
+    position:relative;
+    height:170px;
+    border-radius:18px;
+    background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
+    box-shadow:0 16px 35px rgba(0,0,0,.14);
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,.06);
+  }
+
+  .env-shadow{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(255,77,136,.10), transparent 45%),
+      radial-gradient(circle at 80% 20%, rgba(124,77,255,.10), transparent 45%),
+      radial-gradient(circle at 40% 90%, rgba(255,215,90,.10), transparent 50%);
+    pointer-events:none;
+  }
+
+  .flap{
+    position:absolute;
+    left:0; right:0;
+    top:0;
+    height:100px;
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    transition: transform .65s ease;
+    background:
+      linear-gradient(135deg, rgba(255,77,136,.18), rgba(124,77,255,.14)),
+      linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.75));
+    clip-path: polygon(0 0, 100% 0, 50% 70%);
+    border-top-left-radius:18px;
+    border-top-right-radius:18px;
+  }
+
+  .seal{
+    position:absolute;
+    left:50%;
+    top:78px;
+    transform:translateX(-50%);
+    width:52px;
+    height:52px;
+    border-radius:999px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    box-shadow: 0 12px 26px rgba(255,77,136,.22);
+    display:grid;
+    place-items:center;
+    color:white;
+    font-weight:900;
+    letter-spacing:.5px;
+    transition: transform .35s ease, opacity .35s ease;
+  }
+
+  .env-front{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .env-front::before{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    bottom:0;
+    height:110px;
+    background: linear-gradient(180deg, rgba(255,255,255,.0), rgba(255,255,255,.85));
+    clip-path: polygon(0 100%, 50% 40%, 100% 100%, 100% 0, 0 0);
+    opacity:.9;
+  }
+
+  .tap-hint{
+    margin-top:10px;
+    font-size:13px;
+    color: rgba(43,27,35,.65);
+  }
+
+  /* The letter paper that slides out */
+  .paper{
+    position:absolute;
+    left:50%;
+    top:18px;
+    transform: translateX(-50%) translateY(70px) scale(.98);
+    width:86%;
+    height:0;
+    opacity:0;
+    border-radius:14px;
+    background:#ffffff;
+    box-shadow:0 18px 40px rgba(0,0,0,.16);
+    border:1px solid rgba(0,0,0,.06);
+    transition: transform .75s ease, opacity .45s ease, height .75s ease;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    text-align:left;
+    padding:0 16px;
+  }
+  .paper-inner{padding:14px 6px 16px;}
+  .paper-title{
+    font-weight:900;
+    margin:10px 0 6px;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-size:16px;
+  }
+  .typed{
+    font-size:14px;
+    color:#3b2a33;
+    line-height:1.7;
+    white-space:pre-wrap;
+    min-height: 86px;
+  }
+  .caret{
+    display:inline-block;
+    width:8px;
+    height:14px;
+    margin-left:2px;
+    background: rgba(59,42,51,.55);
+    transform: translateY(2px);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  /* Open state */
+  .envelope.open .flap{transform: rotateX(180deg);}
+  .envelope.open .seal{transform: translateX(-50%) scale(.85); opacity:0;}
+  .envelope.open .paper{
+    height:138px;
+    opacity:1;
+    transform: translateX(-50%) translateY(0px) scale(1);
+  }
+</style>
+</head>
+
+<body>
+  <div class="float-layer" id="floatLayer" aria-hidden="true"></div>
+
+  <div class="wrap">
+
+    <!-- PAGE 1 -->
+    <section class="card" id="pass">
+      <h1>Just one little thing…</h1>
+      <h2>AYA, enter your birthday</h2>
+      <p class="soft">DD/MM/YYYY</p>
+      <input id="date" placeholder="10/10/2007" inputmode="numeric" autocomplete="off" />
+      <br />
+      <button id="unlockBtn">Unlock</button>
+      <p id="err" style="color:#b0003a;display:none;margin-top:10px">Not this one 🤍</p>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="card hidden" id="months">
+      <h2>Let me walk through my year again…</h2>
+      <div class="month" id="month">January</div>
+      <p class="soft">Watch closely… it stops on my favorite month.</p>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section class="card hidden" id="august">
+      <h1>August</h1>
+      <h2>The month that changed everything</h2>
+      <p>
+        That’s when I met you.<br>
+        And without even trying,<br>
+        you made my year feel brighter.
+      </p>
+      <button id="nextToNY">Next</button>
+    </section>
+
+    <!-- PAGE 4 -->
+    <section class="card hidden" id="ny">
+      <h1>Happy New Year, AYA ✨</h1>
+      <h2>I hope this year brings you peace, love, and the sweetest moments</h2>
+      <p>
+        Thank you for being part of my year.<br>
+        You mean more to me than I can explain in one message.
+      </p>
+
+      <!-- Click-to-open envelope + typewriter letter -->
+      <div class="envelope-zone">
+        <div class="envelope" id="envelope" role="button" aria-label="Open letter" tabindex="0">
+          <div class="env-body">
+            <div class="env-shadow"></div>
+
+            <div class="paper" id="paper">
+              <div class="paper-inner">
+                <div class="paper-title">A small letter for you</div>
+                <div class="typed" id="typedText"></div><span class="caret" id="caret"></span>
+              </div>
+            </div>
+
+            <div class="flap"></div>
+            <div class="seal">♥</div>
+            <div class="env-front"></div>
+          </div>
+          <div class="tap-hint">Tap to open the envelope</div>
+        </div>
+      </div>
+
+      <button id="goodbyeBtn">Goodbye</button>
+    </section>
+
+    <!-- PAGE 5 -->
+    <section class="card hidden" id="bye">
+      <h1>Goodbye</h1>
+      <p>
+        Take care, AYA.<br>
+        I hope this new year is gentle with you 🤍
+      </p>
+    </section>
+
+  </div>
+
+<script>
+  // Passcode
+  const CORRECT = "10/10/2007";
+
+  // Month counter (stops at August)
+  const monthsList = ["January","February","March","April","May","June","July","August"];
+  let i = 0, timer = null;
+
+  // Floating hearts + flowers
+  const floatLayer = document.getElementById("floatLayer");
+  const floatEmojis = ["💗","💖","💘","💞","🌸","🌷","🌹","💐","🪷","🌺"];
+  let floatTimer = null;
+
+  function startFloaties(){
+    if (floatTimer) return;
+    floatTimer = setInterval(() => {
+      const el = document.createElement("div");
+      el.className = "floaty";
+      el.textContent = floatEmojis[Math.floor(Math.random()*floatEmojis.length)];
+
+      const left = Math.random()*100;
+      const size = 14 + Math.random()*18;
+      const duration = 5 + Math.random()*6;
+      const drift = (Math.random()*120 - 60).toFixed(0) + "px";
+      const rot = (Math.random()*140 - 70).toFixed(0) + "deg";
+
+      el.style.left = left + "vw";
+      el.style.fontSize = size + "px";
+      el.style.animationDuration = duration + "s";
+      el.style.setProperty("--drift", drift);
+      el.style.setProperty("--rot", rot);
+
+      floatLayer.appendChild(el);
+      setTimeout(() => el.remove(), duration*1000);
+    }, 220);
+  }
+
+  // Pages
+  const pass = document.getElementById("pass");
+  const monthsDiv = document.getElementById("months");
+  const august = document.getElementById("august");
+  const ny = document.getElementById("ny");
+  const byePage = document.getElementById("bye");
+  const monthEl = document.getElementById("month");
+  const err = document.getElementById("err");
+
+  function showOnly(section){
+    [pass, monthsDiv, august, ny, byePage].forEach(s => s.classList.add("hidden"));
+    section.classList.remove("hidden");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  // Envelope + typewriter letter
+  const envelope = document.getElementById("envelope");
+  const typedText = document.getElementById("typedText");
+  const caret = document.getElementById("caret");
+  let typedStarted = false;
+
+  const letterLines = [
+    "AYA,",
+    "",
+    "I hope this little surprise makes you smile.",
+    "You’ve become a special part of my life, and you truly mean a lot to me.",
+    "",
+    "I love you — sincerely — and I’ll always want good things for you, no matter what.",
+    "Even if we’re not together, my feelings and respect for you don’t change.",
+    "",
+    "And right now… I really wish I was with you, sharing this moment.",
+    "",
+    "Happy New Year 🤍"
+  ];
+
+  function typeLetter(lines){
+    const full = lines.join("\\n");
+    typedText.textContent = "";
+    caret.style.display = "inline-block";
+
+    let idx = 0;
+    function step(){
+      typedText.textContent = full.slice(0, idx);
+      idx++;
+      if (idx <= full.length){
+        setTimeout(step, 22); // typing speed
+      } else {
+        caret.style.display = "none";
+      }
+    }
+    step();
+  }
+
+  function openEnvelope(){
+    envelope.classList.add("open");
+    if (!typedStarted){
+      typedStarted = true;
+      setTimeout(() => typeLetter(letterLines), 350);
+    }
+  }
+
+  function toggleEnvelope(){
+    if (envelope.classList.contains("open")) return; // keep open once opened
+    openEnvelope();
+  }
+
+  envelope.addEventListener("click", toggleEnvelope);
+  envelope.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      toggleEnvelope();
+    }
+  });
+
+  // Unlock flow
+  document.getElementById("unlockBtn").addEventListener("click", () => {
+    const v = document.getElementById("date").value.trim();
+    if (v !== CORRECT){
+      err.style.display = "block";
+      return;
+    }
+    err.style.display = "none";
+    showOnly(monthsDiv);
+    i = 0;
+
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => {
+      monthEl.textContent = monthsList[i];
+      if (i === 7){
+        clearInterval(timer);
+        setTimeout(() => showOnly(august), 700);
+      }
+      i++;
+    }, 700);
+  });
+
+  document.getElementById("nextToNY").addEventListener("click", () => {
+    showOnly(ny);
+  });
+
+  document.getElementById("goodbyeBtn").addEventListener("click", () => {
+    showOnly(byePage);
+  });
+
+  // Enter key to unlock
+  document.getElementById("date").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("unlockBtn").click();
+  });
+
+  // Start floating hearts/flowers immediately
+  startFloaties();
+</script>
+</body>
+</html>
